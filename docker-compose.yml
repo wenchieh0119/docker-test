@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-test004 # 指定 MySQL 容器名稱
+    environment:
+        MYSQL_ROOT_PASSWORD: admin
+        MYSQL_DATABASE: user_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql   # 將數據存儲在名為 mysql_data 的 Docker 卷中
+    networks:
+      - mynetwork # 將 MySQL 容器加入 mynetwork 網絡
+
+  tomcat:
+    build: .
+    container_name: tomcat-test004 # 指定 Tomcat 容器名稱
+    ports:
+      - "8080:8080"
+    volumes:
+      - tomcat_data:/usr/local/tomcat/webapps   # 將數據存儲在名為 tomcat_data 的 Docker 卷中
+    networks:
+      - mynetwork # 將 Tomcat 容器加入 mynetwork 網絡
+    depends_on:
+      - mysql
+
+networks:
+  mynetwork:
+    driver: bridge # 使用橋接網路驅動
+
+volumes:
+  mysql_data:  #定義 MySQL 數據卷名稱
+  tomcat_data: #定義 Tomcat 數據卷名稱
+
